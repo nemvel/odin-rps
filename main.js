@@ -1,6 +1,11 @@
-let humanScore = 0;
-let computerScore = 0;
-let humanChoice;
+const humanScore = document.querySelector("#playerScore p");
+const computerScore = document.querySelector("#compScore p");
+
+let humanScoreCounter = 0;
+let computerScoreCounter = 0;
+
+humanScore.textContent = humanScoreCounter;
+computerScore.textContent = computerScoreCounter;
 
 
 function getComputerChoice() {
@@ -9,56 +14,60 @@ function getComputerChoice() {
     return choices[randomIndex];
 }
 
-function getHumanChoice() {
-    let choice = prompt("Rock / Paper / Scissors ?");
-    if (choice) {
-        choice = choice.toLowerCase();
-        if (choice === "rock" || choice === "paper" || choice === "scissors")
-            return choice;
+const choices = document.getElementById("choices");
+const compChoiceBox = document.getElementById("compChoice");
+
+choices.addEventListener('click', (e) => {
+    if (e.target.tagName === "BUTTON") {
+        const compChoice = getComputerChoice();
+
+        // compChoiceBox.classList.add("paused");
+        compChoiceBox.style.backgroundImage = `url("./images/${compChoice}.jpeg")`;
+
+        playRound(e.target.id, compChoice);
+
+        // setTimeout(() => {
+        //     compChoiceBox.classList.remove("paused");
+        // }, 3000);
+
     }
-    return null;
-}
+});
+
+const result = document.querySelector("#result p");
 
 function playRound(humanChoice, computerChoice) {
     if (humanChoice === computerChoice) {
-        return "Tie!";
+        result.textContent = "Tie!";
+    } else if ((humanChoice === "rock" && computerChoice === "scissors") ||
+                (humanChoice === "paper" && computerChoice === "rock") ||
+                (humanChoice === "scissors" && computerChoice === "paper")
+    ) {
+        humanScore.textContent = ++humanScoreCounter;
+        result.textContent = "Player won!";
+    } else {
+        computerScore.textContent = ++computerScoreCounter;
+        result.textContent = "Computer won!";
     }
-    if ( 
-    (humanChoice === "rock" && computerChoice === "scissors") ||
-    (humanChoice === "paper" && computerChoice === "rock") ||
-    (humanChoice === "scissors" && computerChoice === "paper")
-    ) {  
-        humanScore++;
-        return "Player won!";      r
-    }
-    computerScore++;
-    return "Computer won!";
+    checkGameEnd();
 }
 
-while (humanChoice = getHumanChoice()) {
-    console.log("player choice: " + humanChoice);
-    computerChoice = getComputerChoice();
-    console.log("computer choice: " + computerChoice);
-    console.log(playRound(humanChoice, computerChoice));
-    console.log(`Player score: ${humanScore}\nComputer score: ${computerScore}`);
+const choicesButtons = Array.from(document.getElementsByClassName("choice-btn"));
+const gameEndP = document.getElementById("gameEndP");
+const resetGameButton = document.getElementById("resetGameButton");
+
+function checkGameEnd() {
+    if (humanScoreCounter == 5 || computerScoreCounter == 5) {
+        choicesButtons.forEach(el => {
+            el.disabled = true;
+        });
+
+        if (humanScoreCounter == 5) {
+            gameEndP.textContent = "Game over. You WIN!!!";
+        } else {
+            gameEndP.textContent = "Game over. Computer WINS :(";
+        }
+
+        // resetGameButton.hidden = false;
+    }
+
 }
-console.log("Game ended");
-
-
-// // Object mapping solution //
-// const rules = {
-//     rock: "scissors",
-//     paper: "rock",
-//     scissors: "paper"
-// };
-
-// function getComputerChoice() {
-//     const choices = Object.keys(rules);
-//     return choices[Math.floor(Math.random() * choices.length)];
-// }
-
-// function getWinner(player, computer) {
-//     if (player === computer) return "Tie";
-//     if (rules[player] === computer) return "Player wins";
-//     return "Computer wins";
-// }
